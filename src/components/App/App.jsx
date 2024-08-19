@@ -7,18 +7,18 @@ import Notification from "../Notification/Notification";
 export default function App() {
   const [values, setValues] = useState(() => {
     const savedValues = window.localStorage.getItem("button-value");
-    console.log(savedValues);
-    if (savedValues !== null) {
-      return JSON.parse(savedValues);
-    }
-    return 0;
+    return savedValues
+      ? JSON.parse(savedValues)
+      : {
+          good: 0,
+          neutral: 0,
+          bad: 0,
+        };
   });
 
-  // useState({
-  //   good: 0,
-  //   neutral: 0,
-  //   bad: 0,
-  // });
+  useEffect(() => {
+    window.localStorage.setItem("button-value", JSON.stringify(values));
+  }, [values]);
 
   const updateFeedback = (feedbackType) => {
     setValues({
@@ -35,12 +35,9 @@ export default function App() {
     });
   };
 
-  useEffect(() => {
-    window.localStorage.setItem("button-value", JSON.stringify(values));
-  }, [values]);
-
   const totalFeedback = values.good + values.neutral + values.bad;
-  const positiveFeedback = Math.round((values.good / totalFeedback) * 100);
+  const positiveFeedback =
+    totalFeedback > 0 ? Math.round((values.good / totalFeedback) * 100) : 0;
 
   return (
     <div>
